@@ -2,15 +2,15 @@
 
 use App\Http\Controllers\EventoController;
 use App\Http\Controllers\InicioController;
+use App\Http\Controllers\TipoController;
 use Illuminate\Support\Facades\Route;
 
-// Rota da Página Inicial
 Route::get('/', [InicioController::class, 'index'])->name('inicio');
-
-// Rotas de Eventos
 Route::get('/eventos', [EventoController::class, 'index'])->name('eventos.index');
-Route::get('/eventos/tipo/{tipo}', [EventoController::class, 'porTipo'])->name('eventos.tipo');
-Route::get('/eventos/{id}', [EventoController::class, 'show'])->whereNumber('id')->name('eventos.show');
+Route::get('/eventos/{evento}', [EventoController::class, 'show'])
+    ->whereNumber('evento')
+    ->name('eventos.show');
+Route::get('/tipos/{tipo:slug}', [TipoController::class, 'show'])->name('tipos.show');
 
 // Rota Fallback para URLs desconhecidas
 Route::fallback(function () {

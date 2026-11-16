@@ -8,8 +8,8 @@
     @endif
 
     <h1>{{ $evento->titulo }}</h1>
-    <p><strong>Tipo:</strong> {{ ucfirst($evento->tipo) }}</p>
-    <p><strong>Data:</strong> {{ date('d/m/Y', strtotime($evento->data)) }}</p>
+    <p><strong>Tipo:</strong> <a href="{{ route('tipos.show', $evento->tipo) }}">{{ $evento->tipo->nome }}</a></p>
+    <p><strong>Data:</strong> {{ $evento->data->format('d/m/Y') }}</p>
     <p><strong>Local:</strong> {{ $evento->local }}</p>
     <p><strong>Inscritos:</strong> {{ $evento->inscritos }} de {{ $evento->vagas }}</p>
 
