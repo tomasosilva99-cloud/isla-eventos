@@ -37,3 +37,14 @@
 ## Desafio Autónomo: Ordem das Rotas
 * **Questão:** Se `/eventos/{id}` não tivesse `->whereNumber('id')` e estivesse escrita **antes** de `/eventos/proximos`, o que acontecia ao abrir `/eventos/proximos`? Porquê?
 * **Resposta:** Ao abrir `/eventos/proximos`, o Laravel percorreria a lista de rotas de cima para baixo. Como `/eventos/{id}` aceitaria qualquer texto sem a restrição numérica, a palavra `"proximos"` seria capturada como o parâmetro `$id`. A rota tentaria procurar no array um evento com o ID `"proximos"`, não encontraria e devolveria um **erro 404**, impedindo que a rota `/eventos/proximos` fosse alguma vez atingida.
+
+
+# PL04 - Layouts, partials e componentes
+
+## Parte E: `{{ }}` contra `{!! !!}` (Proteção XSS)
+* **Com `{{ $evento['titulo'] }}` (E1):** No código-fonte da página (`Ctrl+U`), o código aparece escapado como `&lt;script&gt;alert(&quot;XSS&quot;)&lt;/script&gt;Hackathon ISLA 24h`. O navegador interpreta o texto literalmente e não executa o JavaScript, protegendo a aplicação contra ataques XSS.
+* **Com `{!! $evento['titulo'] !!}` (E2):** A sintaxe `{!! !!}` imprime o conteúdo sem qualquer filtragem/escape. Ao abrir a página inicial, o navegador executa o código JavaScript malicioso e dispara imediatamente uma janela de alerta (`alert("XSS")`). Por segurança, `{!! !!}` nunca deve ser utilizado com dados introduzidos por utilizadores.
+
+## Desafio Autónomo: `@push`/`@stack` vs `@section`/`@yield`
+* **Diferença:** `@yield` define um espaço único no layout que é preenchido ou substituído por uma `@section` numa view filha. Já `@stack` cria uma pilha acumulativa onde várias views ou componentes podem injetar conteúdo sequencialmente através de `@push`, sem apagar o que lá estava antes.
+* **Quando usar:** Usa-se `@section`/`@yield` para áreas estruturais únicas da página (como o `<title>` ou o bloco principal `@yield('conteudo')`). Usa-se `@push`/`@stack` para injetar ficheiros `<script>` ou blocos `<style>` específicos de uma página ou componente diretamente no `<head>` ou no fim do `<body>`.
