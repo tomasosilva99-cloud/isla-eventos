@@ -92,3 +92,19 @@
 * **D5 (Proteção contra SQL Injection):**
   * *Eventos mostrados em `/eventos?tipo=' OR '1'='1`:* **0 eventos** (mostra o alerta "Não há eventos para mostrar").
   * *Significado do `?` no SQL (`select * from eventos where tipo = ?`):* O `?` é um **placeholder (parâmetro preparado / prepared statement)** do PDO. O valor vindo do utilizador é enviado separadamente da instrução SQL e tratado estritamente como texto literal, impedindo que caracteres como aspas (`'`) alterem a lógica da consulta e neutralizando ataques de SQL Injection.
+
+
+  # PL06 - Eloquent e relações
+
+* **A2 (Nome da tabela e pluralização):**
+  * `(new App\Models\Evento)->getTable()` devolve `"eventos"`.
+  * `Str::plural('local')` devolve `"locals"` e `Str::plural('autor')` devolve `"autors"`.
+  * *O que acontecia com o modelo `Local`?* Como o Laravel aplica as regras de pluralização da língua inglesa por omissão, procuraria uma tabela chamada `locals` em vez de `locais` (lançando um erro de tabela não encontrada). Resolve-se adicionando o atributo `#[Table('locais')]` por cima da classe `Local`.
+
+* **B3 (Ordem dos seeders):**
+  * O `TipoSeeder` tem de correr antes do `EventoSeeder` porque a tabela `eventos` possui uma chave estrangeira (`tipo_id`) que aponta para a coluna `id` da tabela `tipos` (`Tipo::pluck('id', 'slug')`). Se os tipos ainda não existissem na base de dados, o array `$tipos` estaria vazio e a inserção dos eventos falharia por violação de integridade referencial.
+
+* **C2 (Problema das N+1 consultas):**
+  * *Sem `with('tipo')`:* **6 consultas** (1 consulta para obter os 5 eventos + 5 consultas individuais para obter o tipo de cada evento).
+  * *Com `with('tipo')`:* **2 consultas** (1 consulta para obter todos os eventos + 1 consulta única com `WHERE id IN (...)` para carregar todos os tipos associados).
+  * *Com 1000 eventos:* Sem `with()` seriam executadas **1001 consultas** ($1 + 1000$); com `with()` continuariam a ser executadas apenas **2 consultas**.

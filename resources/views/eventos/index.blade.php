@@ -8,9 +8,9 @@
     <nav>
         <ul>
             <li><a href="{{ route('eventos.index') }}">Todos</a></li>
-            <li><a href="{{ route('eventos.index', ['tipo' => 'workshop']) }}">Workshops</a></li>
-            <li><a href="{{ route('eventos.index', ['tipo' => 'palestra']) }}">Palestras</a></li>
-            <li><a href="{{ route('eventos.index', ['tipo' => 'hackathon']) }}">Hackathons</a></li>
+            @foreach ($tipos as $t)
+                <li><a href="{{ route('eventos.index', ['tipo' => $t->slug]) }}">{{ $t->nome }}</a></li>
+            @endforeach
         </ul>
     </nav>
 
@@ -20,6 +20,7 @@
                 <tr>
                     <th>#</th>
                     <th>Evento</th>
+                    <th>Tipo</th>
                     <th>Data</th>
                     <th>Vagas livres</th>
                 </tr>
@@ -29,9 +30,12 @@
                     <tr>
                         <td>{{ $loop->iteration }}</td>
                         <td>
-                            <a href="{{ route('eventos.show', $evento->id) }}">{{ $evento->titulo }}</a>
+                            <a href="{{ route('eventos.show', $evento) }}">{{ $evento->titulo }}</a>
                         </td>
-                        <td>{{ date('d/m/Y', strtotime($evento->data)) }}</td>
+                        <td>
+                            <a href="{{ route('tipos.show', $evento->tipo) }}">{{ $evento->tipo->nome }}</a>
+                        </td>
+                        <td>{{ $evento->data->format('d/m/Y') }}</td>
                         <td>
                             @if ($evento->inscritos >= $evento->vagas)
                                 <strong>Esgotado</strong>
